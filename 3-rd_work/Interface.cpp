@@ -5,11 +5,13 @@
 #include "Algorithm.h"
 #include "Interface.h"
 #include <ctime>
+#include <filesystem>
 
 using namespace std;
 
 void save_to_file(BinaryMatrix bm, AllCordinates ac)
 {
+	
 	cout << endl << "Хотите ли вы сохранить матрицу в отдельный файл? Y/N" << endl;;
 	if (accept_deny() == true)
 	{
@@ -17,12 +19,11 @@ void save_to_file(BinaryMatrix bm, AllCordinates ac)
 		do
 		{
 			is_saved = true;
-			string filename;
-			cout << "Введите название файла, куда вы хотите сохранить текст: ";
 			bool correct_filename;
+			string filename;
+			cout << "Введите название файла, куда вы хотите сохранить исходную матрицу: ";
 			do
 			{
-
 				correct_filename = true;
 				cin >> filename;
 				if (filename.substr(0, 3) == "con" || filename.substr(0, 3) == "nul" || filename.substr(0, 3) == "prn" || filename.substr(0, 3) == \
@@ -32,11 +33,17 @@ void save_to_file(BinaryMatrix bm, AllCordinates ac)
 					filename.substr(0, 4) == "lpt1" || filename.substr(0, 4) == "lpt2" || filename.substr(0, 4) == "lpt3" || \
 					filename.substr(0, 4) == "lpt4" || filename.substr(0, 4) == "lpt5" || filename.substr(0, 4) == "lpt6" || \
 					filename.substr(0, 4) == "lpt7" || filename.substr(0, 4) == "lpt8" || filename.substr(0, 4) == "lpt9")
-				{
+				{ 
 					cout << "Использовано зарезервированное системой имя файла" << endl;
 					cout << "Повторите ввод: ";
 					correct_filename = false;
 				}
+				/*experimental::filesystem::path p(filename);
+				if (!experimental::filesystem::is_regular_file(p)) {
+					cout << "Использовано зарезервированное системой имя файла" << endl;
+					cout << "Повторите ввод: ";
+					correct_filename = false;
+				}*/
 			} while (correct_filename == false);
 			ifstream check_opening(filename);
 			if (check_opening)
@@ -58,7 +65,7 @@ void save_to_file(BinaryMatrix bm, AllCordinates ac)
 				ofstream user_output(filename, ios_base::app);
 				bm.print_matrix_to_file(user_output);
 			}
-			cout << "Хотите ли вы записать координаты? Y/N" << endl;
+			cout << "Хотите ли вы записать координаты найденных квадратов? Y/N" << endl;
 			if (accept_deny() == true)
 			{
 				ofstream user_output(filename, ios_base::app);
@@ -134,7 +141,7 @@ void unit_tests()
 	fin3.open("C:\\My Documents\\Visual Studio 2017\\Projects\\3-rd_work\\3-rd_work\\Unit_tests\\Unit_Test3.txt");
 	fin4.open("C:\\My Documents\\Visual Studio 2017\\Projects\\3-rd_work\\3-rd_work\\Unit_tests\\Unit_Test4.txt");
 	fin5.open("C:\\My Documents\\Visual Studio 2017\\Projects\\3-rd_work\\3-rd_work\\Unit_tests\\Unit_Test5.txt");
-	
+
 	string correct_test_answer1 = "d{a,3}mn s{o,3}n";
 	string correct_test_answer2 = "{d,11}{a,13}{m,8}{n,14} son";
 	string correct_test_answer3 = "damn s{o,3}n where d{i,3}d you find th{i,2}s";
@@ -170,7 +177,7 @@ void main_menu()
 			{
 				keyboard_input();
 				break;
-				
+
 			}
 			case(file_input):
 			{
@@ -218,19 +225,25 @@ void keyboard_input()
 {
 	int size;
 	cout << "Введите размер: ";
-	size = correct_user_input(2,INT_MAX);
+	size = correct_user_input(2, INT_MAX);
 	BinaryMatrix bm(size);
-	cout << "Введите элементы матрицы: ";
+	
 	for (int i = 0; i < bm.getSize(); i++) {
 		for (int j = 0; j < bm.getSize(); j++) {
-			int element = correct_user_input(0,1);
+			cout << "Введите элементы матрицы: ";
+			int element = correct_user_input(0, 1);
 			bm.setMatrixElement(i, j, element);
 		}
 	}
 	bm.print_matrix();
 	AllCordinates cords = solution(bm);
-	for (int i = 0; i < cords.size; i++) {
-		cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
+	if (cords.size != 0) {
+		for (int i = 0; i < cords.size; i++) {
+			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
+		}
+	}
+	else {
+		cout << "Квадратов с заданным размером найдено не было" << endl;
 	}
 	cout << endl;
 	save_to_file(bm, cords);
@@ -239,7 +252,7 @@ void keyboard_input()
 void random_filling() {
 	int size;
 	cout << "Введите размер: ";
-	size = correct_user_input();
+	size = correct_user_input(2, INT_MAX);
 	BinaryMatrix bm(size);
 	cout << "Введите элементы матрицы" << endl;
 	for (int i = 0; i < bm.getSize(); i++) {
@@ -249,6 +262,18 @@ void random_filling() {
 		}
 	}
 	bm.print_matrix();
+
+	AllCordinates cords = solution(bm);
+	if (cords.size != 0) {
+		for (int i = 0; i < cords.size; i++) {
+			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
+		}
+	}
+	else {
+		cout << "Квадратов с заданным размером найдено не было" << endl;
+	}
+	cout << endl;
+	save_to_file(bm, cords);
 }
 
 void input_from_file(string filename)
@@ -258,16 +283,29 @@ void input_from_file(string filename)
 	{
 		cout << "Введите название текстового файла: ";
 		cin >> filename;
-		ifstream test_file(filename);
-		while (!test_file)
-		{
-			cout << "Файла с таким именем не найдено, пожалуйста, повторите ввод: ";
+		bool is_correct_content = false;
+		while (!is_correct_content) {
+			ifstream test_file(filename);
+			while (!test_file)
+			{
+				cout << "Файла с таким именем не найдено, пожалуйста, повторите ввод: ";
+				test_file.close();
+				cin >> filename;
+				test_file.open(filename);
+			}
 			test_file.close();
-			cin >> filename;
-			test_file.open(filename);
+			file_input.open(filename);
+			int tmp;
+			is_correct_content = true;
+			while (!file_input.eof()) {
+				file_input >> tmp;
+				if (tmp < 0 && tmp > 1) {
+					cout << "Неккоректные числа в файле, измените файл или выберите другой" << endl;
+					is_correct_content = false;
+					break;
+				}
+			}
 		}
-		test_file.close();
-		file_input.open(filename);
 	}
 	else
 	{
@@ -277,4 +315,15 @@ void input_from_file(string filename)
 	BinaryMatrix bm(file_input);
 	bm.print_matrix();
 
+	AllCordinates cords = solution(bm);
+	if (cords.size != 0) {
+		for (int i = 0; i < cords.size; i++) {
+			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
+		}
+	}
+	else {
+		cout << "Квадратов с заданным размером найдено не было" << endl;
+	}
+	cout << endl;
+	save_to_file(bm, cords);
 }

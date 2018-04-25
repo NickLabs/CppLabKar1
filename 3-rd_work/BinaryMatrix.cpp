@@ -11,6 +11,10 @@ BinaryMatrix::BinaryMatrix(ifstream &file_input)
 {
 	int count_space = 0;
 	char symbol;
+
+	file_input.seekg(0, ios::beg);
+	file_input.clear();
+
 	while (!file_input.eof())
 	{
 		file_input.get(symbol);
@@ -18,8 +22,10 @@ BinaryMatrix::BinaryMatrix(ifstream &file_input)
 		if (symbol == '\n') break;
 	}
 	this->size = count_space + 1;
+
 	file_input.seekg(0, ios::beg);
 	file_input.clear();
+
 	this->matrix = new int*[size];
 	for (int i = 0; i < this->size; i++) {
 		matrix[i] = new int[size];
@@ -55,11 +61,6 @@ int BinaryMatrix::getSize() {
 void BinaryMatrix::setMatrixElement(int row ,int column, int element) {
 	this->matrix[row][column] = element;
 }
-
-int  BinaryMatrix::getMatrixElement(int row, int column) {
-	return matrix[row][column];
-}
-
 
 
 void BinaryMatrix::print_matrix_to_file(ofstream &out) {

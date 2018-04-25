@@ -14,7 +14,6 @@ public:
 	BinaryMatrix(int size);
 	int getSize();
 	void setMatrixElement(int row, int column, int element);
-	int getMatrixElement(int row, int column);
 	void print_matrix();
 	void print_matrix_to_file(ofstream &out);
 	int* operator[](int i) {
