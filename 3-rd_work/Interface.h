@@ -9,7 +9,7 @@ using namespace std;
 
 enum  main_menu_enum{custom_input =1, file_input, random_input,exit_programm};
 
-void input_from_file(string filename = "");
+void input_from_file();
 void main_menu();
 void unit_tests();
 int correct_user_input(int min=0, int max=0);

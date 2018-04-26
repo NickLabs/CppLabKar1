@@ -12,7 +12,7 @@ using namespace std;
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-
+	system("color F0");
 	
 	cout << "Работу выполнил студент 475 группы" << endl;
 	cout << "Андрианова Карина" << endl;

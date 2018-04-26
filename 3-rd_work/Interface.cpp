@@ -4,6 +4,7 @@
 #include <cstring>
 #include "Algorithm.h"
 #include "Interface.h"
+#include <Windows.h>
 #include <ctime>
 #include <filesystem>
 
@@ -11,7 +12,7 @@ using namespace std;
 
 void save_to_file(BinaryMatrix bm, AllCordinates ac)
 {
-	
+
 	cout << endl << "Хотите ли вы сохранить матрицу в отдельный файл? Y/N" << endl;;
 	if (accept_deny() == true)
 	{
@@ -33,7 +34,7 @@ void save_to_file(BinaryMatrix bm, AllCordinates ac)
 					filename.substr(0, 4) == "lpt1" || filename.substr(0, 4) == "lpt2" || filename.substr(0, 4) == "lpt3" || \
 					filename.substr(0, 4) == "lpt4" || filename.substr(0, 4) == "lpt5" || filename.substr(0, 4) == "lpt6" || \
 					filename.substr(0, 4) == "lpt7" || filename.substr(0, 4) == "lpt8" || filename.substr(0, 4) == "lpt9")
-				{ 
+				{
 					cout << "Использовано зарезервированное системой имя файла" << endl;
 					cout << "Повторите ввод: ";
 					correct_filename = false;
@@ -227,7 +228,7 @@ void keyboard_input()
 	cout << "Введите размер: ";
 	size = correct_user_input(2, INT_MAX);
 	BinaryMatrix bm(size);
-	
+
 	for (int i = 0; i < bm.getSize(); i++) {
 		for (int j = 0; j < bm.getSize(); j++) {
 			cout << "Введите элементы матрицы: ";
@@ -237,15 +238,18 @@ void keyboard_input()
 	}
 	bm.print_matrix();
 	AllCordinates cords = solution(bm);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 6));
 	if (cords.size != 0) {
 		for (int i = 0; i < cords.size; i++) {
 			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
 		}
 	}
 	else {
-		cout << "Квадратов с заданным размером найдено не было" << endl;
+		cout << "Квадратов с заданным размером найдено не было";
 	}
 	cout << endl;
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 0));
 	save_to_file(bm, cords);
 }
 
@@ -262,68 +266,68 @@ void random_filling() {
 		}
 	}
 	bm.print_matrix();
-
 	AllCordinates cords = solution(bm);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 6));
 	if (cords.size != 0) {
 		for (int i = 0; i < cords.size; i++) {
 			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
 		}
 	}
 	else {
-		cout << "Квадратов с заданным размером найдено не было" << endl;
+		cout << "Квадратов с заданным размером найдено не было" ;
 	}
 	cout << endl;
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 0));
 	save_to_file(bm, cords);
 }
 
-void input_from_file(string filename)
+void input_from_file()
 {
+	string filename;
 	ifstream file_input;
-	if (filename == "")
-	{
-		cout << "Введите название текстового файла: ";
-		cin >> filename;
-		bool is_correct_content = false;
-		while (!is_correct_content) {
-			ifstream test_file(filename);
-			while (!test_file)
-			{
-				cout << "Файла с таким именем не найдено, пожалуйста, повторите ввод: ";
-				test_file.close();
-				cin >> filename;
-				test_file.open(filename);
-			}
+	cout << "Введите название текстового файла: ";
+	cin >> filename;
+	bool is_correct_content = false;
+	while (!is_correct_content) {
+		ifstream test_file(filename);
+		while (!test_file)
+		{
+			cout << "Файла с таким именем не найдено, пожалуйста, повторите ввод: ";
 			test_file.close();
-			file_input.open(filename);
-			int tmp;
-			is_correct_content = true;
-			while (!file_input.eof()) {
-				file_input >> tmp;
-				if (tmp < 0 && tmp > 1) {
-					cout << "Неккоректные числа в файле, измените файл или выберите другой" << endl;
-					is_correct_content = false;
-					break;
-				}
+			cin >> filename;
+			test_file.open(filename);
+		}
+		test_file.close();
+		file_input.open(filename);
+		int tmp;
+		is_correct_content = true;
+		while (!file_input.eof()) {
+			file_input >> tmp;
+			if (tmp < 0 && tmp > 1) {
+				cout << "Неккоректные числа в файле, измените файл или выберите другой" << endl;
+				is_correct_content = false;
+				break;
 			}
 		}
 	}
-	else
-	{
-		file_input.open(filename);
-	}
+
 
 	BinaryMatrix bm(file_input);
 	bm.print_matrix();
 
 	AllCordinates cords = solution(bm);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 6));
 	if (cords.size != 0) {
 		for (int i = 0; i < cords.size; i++) {
 			cout << '[' << cords.cordinates[i].row << ',' << cords.cordinates[i].column << ']' << ' ';
 		}
 	}
 	else {
-		cout << "Квадратов с заданным размером найдено не было" << endl;
+		cout << "Квадратов с заданным размером найдено не было" ;
 	}
 	cout << endl;
+	SetConsoleTextAttribute(hConsole, (WORD)((15 << 4) | 0));
 	save_to_file(bm, cords);
 }
